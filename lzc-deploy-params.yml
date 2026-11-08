@@ -1,0 +1,29 @@
+params:
+  - id: ut_pg_password
+    type: secret
+    name: "数据库密码"
+    description: "PostgreSQL 数据库密码（已预置随机值，应用自动使用）"
+    default_value: "kR3vTq8mWx2nYp5s"
+    optional: false
+  - id: ut_redis_password
+    type: secret
+    name: "Redis 密码"
+    description: "Redis 连接密码（已预置随机值，应用自动使用）"
+    default_value: "hB7nJw4cQz9tLm6d"
+    optional: false
+
+locales:
+  zh:
+    ut_pg_password:
+      name: "数据库密码"
+      description: "PostgreSQL 数据库密码（已预置随机值，应用自动使用）"
+    ut_redis_password:
+      name: "Redis 密码"
+      description: "Redis 连接密码（已预置随机值，应用自动使用）"
+  en:
+    ut_pg_password:
+      name: "Database password"
+      description: "PostgreSQL password (pre-filled with a random value, used automatically)"
+    ut_redis_password:
+      name: "Redis password"
+      description: "Redis connection password (pre-filled with a random value, used automatically)"

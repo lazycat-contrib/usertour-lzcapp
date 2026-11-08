@@ -1,0 +1,70 @@
+application:
+  subdomain: usertour
+  multi_instance: false
+  # UserTour shows a self-service setup wizard on first run that creates the
+  # first system admin account (no email verification, source:
+  # apps/server/src/auth/auth.service.ts setupSystemAdmin), so public_path is
+  # safe (papra/servas precedent, 2026-11-06).
+  public_path:
+    - /
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://usertour:80/
+services:
+  usertour:
+    # upstream: usertour/usertour:0.9.7
+    image: docker.1ms.run/usertour/usertour:0.9.7
+    environment:
+      - DATABASE_URL=postgresql://postgres:{{ut_pg_password}}@postgres:5432/usertour?schema=usertour&sslmode=prefer
+      - DATABASE_DIRECT_URL=postgresql://postgres:{{ut_pg_password}}@postgres:5432/usertour?schema=usertour&sslmode=prefer
+      - Redis_HOST=redis
+      - Redis_PORT=6379
+      - Redis_PASS={{ut_redis_password}}
+      - Redis_USER=default
+      - Redis_TLS=false
+      - JWT_SECRET={{ printf "%x" (stable_secret "usertour_jwt") }}
+      - JWT_EXPIRES_IN=1d
+      - JWT_REFRESH_EXPIRATION_TIME=7d
+      - EMAIL_AUTH_ENABLED=false
+      - APP_HOMEPAGE_URL=
+      - TZ=Asia/Shanghai
+    depends_on:
+      - postgres
+      - redis
+    binds:
+      - /lzcapp/var/mutdata/usertour:/lzcapp/var/data
+  postgres:
+    image: docker.1ms.run/library/postgres:15.14
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD={{ut_pg_password}}
+      - POSTGRES_DB=usertour
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/mutdata/postgres:/var/lib/postgresql/data
+  redis:
+    image: docker.1ms.run/library/redis:7.2.5
+    command: ["redis-server", "--requirepass", "{{ut_redis_password}}"]
+    environment:
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/mutdata/redis:/data
+usage: |
+  UserTour 是开源的产品引导与用户上手构建器（主体 MIT 许可，ee/ 目录企业许可除外，
+  不随本包分发），可为 Web 应用创建交互式产品导览、任务清单与站内公告，数据保存在本机。
+
+  使用方法：
+  1. 首次打开应用会进入系统管理员创建向导，自助填写名称、邮箱与密码即可完成初始化。
+  2. 在后台创建内容（tour / checklist / banner），按官方文档把 SDK 脚本接入你的站点。
+
+  说明：
+  - 首次安装通过网页向导自助建号，因此使用 public_path 直接对外开放，由应用自身
+    登录页鉴权。
+  - JWT_SECRET 由部署系统注入固定随机值，容器重建后会话不失效。
+  - PostgreSQL 与 Redis 密码由部署系统注入随机值。
+  - 邮件认证默认关闭（EMAIL_AUTH_ENABLED=false），登录走账号密码，无需 SMTP。
+  - 数据保存在 /lzcapp/var/mutdata（PostgreSQL + Redis），卸载会一并删除。
+  - 本包未做实机验证，功能以官方文档为准：https://docs.usertour.io/
+  - 许可证 MIT，随包分发，见 /package-licenses/。

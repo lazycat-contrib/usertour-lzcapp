@@ -1,0 +1,18 @@
+package: community.lazycat.app.usertour
+name: UserTour
+version: 0.9.7
+description: "Open-source product tour and user onboarding builder: create interactive guides, checklists and announcements for your app."
+min_os_version: "1.5.0"
+homepage: https://usertour.io
+author: Usertour, Inc.
+license: "MIT"
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: UserTour
+    description: "开源的产品引导与用户上手构建器：为你的应用创建交互式引导流程、任务清单与公告，数据自持。"
+  en:
+    name: UserTour
+    description: "Open-source product tour and user onboarding builder: create interactive guides, checklists and announcements for your app."
