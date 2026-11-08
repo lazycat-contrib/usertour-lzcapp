@@ -36,7 +36,8 @@ services:
     binds:
       - /lzcapp/var/mutdata/usertour:/lzcapp/var/data
   postgres:
-    image: docker.1ms.run/library/postgres:15.14
+    # upstream: library/postgres:15.19
+    image: docker.1ms.run/library/postgres:15.19
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD={{ut_pg_password}}
@@ -45,7 +46,8 @@ services:
     binds:
       - /lzcapp/var/mutdata/postgres:/var/lib/postgresql/data
   redis:
-    image: docker.1ms.run/library/redis:7.2.5
+    # upstream: library/redis:7.2.17
+    image: docker.1ms.run/library/redis:7.2.17
     command: ["redis-server", "--requirepass", "{{ut_redis_password}}"]
     environment:
       - TZ=Asia/Shanghai
